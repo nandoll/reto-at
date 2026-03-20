@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 
 interface ToastProps {
@@ -11,15 +11,17 @@ interface ToastProps {
 
 export default function Toast({ message, detail, onClose }: ToastProps) {
   const [visible, setVisible] = useState(false)
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
 
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true))
     const timer = setTimeout(() => {
       setVisible(false)
-      setTimeout(onClose, 300)
+      setTimeout(() => onCloseRef.current(), 300)
     }, 3000)
     return () => clearTimeout(timer)
-  }, [onClose])
+  }, [])
 
   return (
     <div

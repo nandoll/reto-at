@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Zap } from 'lucide-react'
@@ -18,11 +18,27 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
   useEffect(() => {
     if (open) {
+      setError(null)
+      setLoading(false)
       requestAnimationFrame(() => setVisible(true))
     } else {
       setVisible(false)
     }
   }, [open])
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading) onClose()
+    },
+    [onClose, loading]
+  )
+
+  useEffect(() => {
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open, handleKeyDown])
 
   if (!open) return null
 
@@ -54,12 +70,19 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
     }
   }
 
+  function handleBackdropClick() {
+    if (!loading) onClose()
+  }
+
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Iniciar sesión"
       className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${
         visible ? 'bg-black/65' : 'bg-black/0'
       }`}
-      onClick={onClose}
+      onClick={handleBackdropClick}
     >
       <div
         className={`flex overflow-hidden rounded-[20px] bg-surface shadow-2xl shadow-black/30 transition-all duration-300 ${
@@ -68,7 +91,6 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         style={{ width: 820, height: 480 }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Left Brand Panel */}
         <div
           className="flex w-[360px] shrink-0 flex-col items-center justify-center gap-4 p-10"
           style={{
@@ -82,7 +104,6 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           </p>
         </div>
 
-        {/* Right Form Panel */}
         <form
           onSubmit={handleSubmit}
           className="flex flex-1 flex-col justify-center gap-5 px-9 py-10"
@@ -109,6 +130,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
               name="email"
               type="email"
               required
+              autoFocus
               defaultValue="demo@betday.com"
               className="rounded-[var(--radius-md)] border border-border-medium px-3 py-2.5 text-sm outline-none focus:border-primary"
             />
