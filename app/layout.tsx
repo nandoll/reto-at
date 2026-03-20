@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { DM_Sans } from 'next/font/google'
 import Providers from './providers'
-import AuthStatus from './components/AuthStatus'
+import Header from './components/Header'
+import Footer from './components/Footer'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -24,11 +25,9 @@ export default function RootLayout({
     <html lang="es" className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <Providers>
-          <header className="flex items-center justify-between border-b px-6 py-3">
-            <span className="font-bold">BetDay Lite</span>
-            <AuthStatus />
-          </header>
-          <div className="flex flex-1 flex-col">{children}</div>
+          <Header />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>
