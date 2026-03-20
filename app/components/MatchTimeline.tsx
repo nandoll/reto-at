@@ -92,21 +92,25 @@ export default function MatchTimeline({ matches }: MatchTimelineProps) {
 
   return (
     <div className="flex flex-col rounded-[var(--radius-pill)] border border-border-light bg-surface">
-      <div className="px-6 pt-5">
-        <h2 className="text-lg font-bold text-text-primary">
+      <div className="px-4 pt-4 lg:px-6 lg:pt-5">
+        <h2 className="text-base font-bold text-text-primary lg:text-lg">
           Destacados del día
         </h2>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto px-6 py-3">
+      <div className="flex gap-3 overflow-x-auto px-4 py-3 lg:overflow-visible lg:px-6">
         {featured.map((match, i) => (
-          <FeaturedCard
+          <div
             key={match.id}
-            match={match}
-            labelIndex={i}
-            selectedPick={hydrated ? (selectedPicks[match.id] ?? []) : []}
-            onPickSelect={handlePickSelect}
-          />
+            className={`min-w-0 ${i > 0 ? "hidden lg:block lg:flex-1" : "shrink-0 lg:shrink lg:flex-1"}`}
+          >
+            <FeaturedCard
+              match={match}
+              labelIndex={i}
+              selectedPick={hydrated ? (selectedPicks[match.id] ?? []) : []}
+              onPickSelect={handlePickSelect}
+            />
+          </div>
         ))}
       </div>
 
