@@ -26,8 +26,8 @@ export default function LeagueSection({
   const badge = leagueBadges[leagueId];
 
   return (
-    <div className="flex flex-col gap-3 px-6 pb-6">
-      <div className="flex items-center justify-between bg-surface px-5 py-3">
+    <div className="flex flex-col gap-3 px-3 pb-4 lg:px-6 lg:pb-6">
+      <div className="flex items-center justify-between bg-surface px-3 py-3 lg:px-5">
         <div className="flex items-center gap-3">
           {badge && (
             <div className="flex h-11 w-11 items-center justify-center rounded-full ">
