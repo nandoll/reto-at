@@ -1,4 +1,5 @@
 import NextAuth from 'next-auth'
+import { NextResponse } from 'next/server'
 import Credentials from 'next-auth/providers/credentials'
 import { users } from '@/data/users-seed'
 
@@ -31,7 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isProtected = nextUrl.pathname.startsWith('/profile')
 
       if (isProtected && !isLoggedIn) {
-        return Response.redirect(new URL('/login', nextUrl))
+        return NextResponse.redirect(new URL('/login', nextUrl))
       }
 
       return true
