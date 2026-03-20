@@ -6,18 +6,20 @@ import { Trash2 } from 'lucide-react'
 import { useBetStore } from '@/store/bet-store'
 import BetCard from './BetCard'
 import Toast from './Toast'
+import LoginModal from './LoginModal'
 
 export default function CuponSidebar() {
   const { data: session } = useSession()
   const { bets, removeBet, updateStake, clearAll } = useBetStore()
   const [toast, setToast] = useState<{ message: string; detail?: string } | null>(null)
+  const [showLogin, setShowLogin] = useState(false)
 
   const totalStake = bets.reduce((sum, b) => sum + b.stake, 0)
   const totalWin = bets.reduce((sum, b) => sum + b.odd * b.stake, 0)
 
   const handlePlaceBets = useCallback(() => {
     if (!session?.user) {
-      // Late Auth Gate — will be handled by login modal in next branch
+      setShowLogin(true)
       return
     }
 
@@ -87,6 +89,8 @@ export default function CuponSidebar() {
           </>
         )}
       </div>
+
+      <LoginModal open={showLogin} onClose={() => setShowLogin(false)} />
 
       {toast && (
         <Toast
