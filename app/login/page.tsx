@@ -16,21 +16,24 @@ export default function LoginPage() {
 
     const formData = new FormData(e.currentTarget)
 
-    const result = await signIn('credentials', {
-      email: formData.get('email'),
-      password: formData.get('password'),
-      redirect: false,
-    })
+    try {
+      const result = await signIn('credentials', {
+        email: formData.get('email'),
+        password: formData.get('password'),
+        redirect: false,
+      })
 
-    setLoading(false)
+      if (result?.error) {
+        setError('Credenciales inválidas')
+        return
+      }
 
-    if (result?.error) {
-      setError('Credenciales inválidas')
-      return
+      router.push('/')
+    } catch {
+      setError('Error de conexión. Intenta de nuevo.')
+    } finally {
+      setLoading(false)
     }
-
-    router.push('/')
-    router.refresh()
   }
 
   return (
