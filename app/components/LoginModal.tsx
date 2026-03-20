@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { Zap } from 'lucide-react'
 
 interface LoginModalProps {
@@ -11,7 +10,6 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ open, onClose }: LoginModalProps) {
-  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -61,8 +59,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         return
       }
 
-      onClose()
-      router.refresh()
+      window.location.reload()
     } catch {
       setError('Error de conexión. Intenta de nuevo.')
     } finally {

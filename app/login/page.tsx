@@ -1,11 +1,9 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginPage() {
-  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -28,7 +26,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push('/')
+      window.location.href = '/'
     } catch {
       setError('Error de conexión. Intenta de nuevo.')
     } finally {
