@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import type { PlacedBet } from '@/store/bet-store'
 
 const pickLabels = { HOME: '1', DRAW: 'X', AWAY: '2' } as const
@@ -33,7 +34,7 @@ export default function ProfileBetCard({ bet }: ProfileBetCardProps) {
   const config = statusConfig[bet.status]
 
   return (
-    <div className={`rounded-[var(--radius-lg)] border-l-4 ${config.border} ${config.bg} p-4`}>
+    <Link href={`/bets/${bet.id}`} className={`block rounded-[var(--radius-lg)] border-l-4 ${config.border} ${config.bg} p-4 transition-shadow hover:shadow-md`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${config.text} bg-surface`}>
@@ -68,6 +69,6 @@ export default function ProfileBetCard({ bet }: ProfileBetCardProps) {
           </span>
         )}
       </div>
-    </div>
+    </Link>
   )
 }
