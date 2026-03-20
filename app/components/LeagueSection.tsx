@@ -11,6 +11,10 @@ interface LeagueSectionProps {
   onPickSelect: (matchId: string, pick: Pick, odd: number) => void;
 }
 
+const leagueBadges: Record<string, { crest: string }> = {
+  premier_league: { crest: "/crests/premier_league.png" },
+};
+
 export default function LeagueSection({
   leagueName,
   country,
@@ -18,16 +22,30 @@ export default function LeagueSection({
   selectedPicks,
   onPickSelect,
 }: LeagueSectionProps) {
+  const leagueId = matches[0]?.league.id ?? "";
+  const badge = leagueBadges[leagueId];
+
   return (
     <div className="flex flex-col gap-3 px-6 pb-6">
-      <div className="flex items-center justify-between rounded-none bg-surface px-5 py-3">
+      <div className="flex items-center justify-between bg-surface px-5 py-3">
         <div className="flex items-center gap-3">
-          <span className="text-base font-bold text-text-primary">
-            {leagueName}
-          </span>
-          <span className="text-xs text-text-tertiary">{country}</span>
+          {badge && (
+            <div className="flex h-11 w-11 items-center justify-center rounded-full ">
+              <img
+                src={badge.crest}
+                alt={leagueName}
+                className="h-full w-full object-contain"
+              />
+            </div>
+          )}
+          <div>
+            <span className="text-base font-bold text-text-primary">
+              {leagueName}
+            </span>
+            <span className="ml-2 text-xs text-text-tertiary">{country}</span>
+          </div>
         </div>
-        <span className="text-xs text-text-tertiary">
+        <span className="rounded-full border border-border-medium px-3 py-1 text-xs text-text-tertiary">
           {matches.length} partidos
         </span>
       </div>

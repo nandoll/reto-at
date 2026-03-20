@@ -4,7 +4,9 @@ import type { Pick, BetStatus } from "@/types/domain";
 
 export interface BetItem {
   matchId: string;
+  homeTeamId: string;
   homeTeam: string;
+  awayTeamId: string;
   awayTeam: string;
   pick: Pick;
   odd: number;
