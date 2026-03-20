@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import type { Match, Pick } from '@/types/domain'
+import { useBetStore } from '@/store/bet-store'
 import FeaturedCard from './FeaturedCard'
 import LeagueSection from './LeagueSection'
 
@@ -27,19 +27,26 @@ function groupByLeague(matches: Match[]) {
 }
 
 export default function MatchTimeline({ matches }: MatchTimelineProps) {
-  const [selectedPicks, setSelectedPicks] = useState<Record<string, Pick>>({})
+  const { bets, addBet } = useBetStore()
+
+  const selectedPicks: Record<string, Pick> = {}
+  for (const bet of bets) {
+    selectedPicks[bet.matchId] = bet.pick
+  }
 
   const featured = matches.slice(0, 3)
   const leagues = groupByLeague(matches)
 
-  function handlePickSelect(matchId: string, pick: Pick, _odd: number) {
-    setSelectedPicks((prev) => {
-      if (prev[matchId] === pick) {
-        const next = { ...prev }
-        delete next[matchId]
-        return next
-      }
-      return { ...prev, [matchId]: pick }
+  function handlePickSelect(matchId: string, pick: Pick, odd: number) {
+    const match = matches.find((m) => m.id === matchId)
+    if (!match) return
+
+    addBet({
+      matchId,
+      homeTeam: match.homeTeam.name,
+      awayTeam: match.awayTeam.name,
+      pick,
+      odd,
     })
   }
 
