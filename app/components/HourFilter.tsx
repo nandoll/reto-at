@@ -1,20 +1,28 @@
-'use client'
+"use client";
 
 interface HourFilterProps {
-  hours: string[]
-  selected: string | null
-  onSelect: (hour: string | null) => void
+  hours: string[];
+  selected: Set<string>;
+  onToggle: (hour: string) => void;
+  onReset: () => void;
 }
 
-export default function HourFilter({ hours, selected, onSelect }: HourFilterProps) {
+export default function HourFilter({
+  hours,
+  selected,
+  onToggle,
+  onReset,
+}: HourFilterProps) {
+  const allSelected = selected.size === 0;
+
   return (
     <div className="flex gap-2 overflow-x-auto px-6 py-3">
       <button
-        onClick={() => onSelect(null)}
+        onClick={onReset}
         className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
-          selected === null
-            ? 'bg-primary text-white'
-            : 'border border-border-medium bg-surface text-text-secondary hover:border-primary'
+          allSelected
+            ? "bg-primary text-white"
+            : "border border-border-medium bg-surface text-text-secondary hover:border-primary"
         }`}
       >
         Todos
@@ -22,16 +30,16 @@ export default function HourFilter({ hours, selected, onSelect }: HourFilterProp
       {hours.map((hour) => (
         <button
           key={hour}
-          onClick={() => onSelect(hour)}
+          onClick={() => onToggle(hour)}
           className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
-            selected === hour
-              ? 'bg-primary text-white'
-              : 'border border-border-medium bg-surface text-text-secondary hover:border-primary'
+            selected.has(hour)
+              ? "bg-primary text-white"
+              : "border border-border-medium bg-surface text-text-secondary hover:border-primary"
           }`}
         >
           {hour}
         </button>
       ))}
     </div>
-  )
+  );
 }

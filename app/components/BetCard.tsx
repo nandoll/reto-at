@@ -1,18 +1,23 @@
-'use client'
+"use client";
 
-import { X } from 'lucide-react'
-import type { BetItem } from '@/store/bet-store'
+import { X } from "lucide-react";
+import type { Pick } from "@/types/domain";
+import type { BetItem } from "@/store/bet-store";
 
-const pickLabels = { HOME: '1', DRAW: 'X', AWAY: '2' } as const
+const pickLabels = { HOME: "1", DRAW: "X", AWAY: "2" } as const;
 
 interface BetCardProps {
-  bet: BetItem
-  onRemove: (matchId: string) => void
-  onStakeChange: (matchId: string, stake: number) => void
+  bet: BetItem;
+  onRemove: (matchId: string, pick?: Pick) => void;
+  onStakeChange: (matchId: string, pick: Pick, stake: number) => void;
 }
 
-export default function BetCard({ bet, onRemove, onStakeChange }: BetCardProps) {
-  const potentialWin = (bet.odd * bet.stake).toFixed(2)
+export default function BetCard({
+  bet,
+  onRemove,
+  onStakeChange,
+}: BetCardProps) {
+  const potentialWin = (bet.odd * bet.stake).toFixed(2);
 
   return (
     <div className="flex flex-col gap-2 border-b border-border-light px-3.5 py-3.5">
@@ -22,7 +27,10 @@ export default function BetCard({ bet, onRemove, onStakeChange }: BetCardProps) 
             {bet.homeTeam} vs {bet.awayTeam}
           </span>
         </div>
-        <button onClick={() => onRemove(bet.matchId)} className="text-text-placeholder hover:text-text-secondary">
+        <button
+          onClick={() => onRemove(bet.matchId, bet.pick)}
+          className="text-text-placeholder hover:text-text-secondary"
+        >
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -35,7 +43,9 @@ export default function BetCard({ bet, onRemove, onStakeChange }: BetCardProps) 
         <span className="text-xs font-medium text-text-primary">
           {pickLabels[bet.pick]}
         </span>
-        <span className="text-sm font-bold text-primary">{bet.odd.toFixed(2)}</span>
+        <span className="text-sm font-bold text-primary">
+          {bet.odd.toFixed(2)}
+        </span>
       </div>
 
       <div className="flex items-center gap-1">
@@ -44,7 +54,9 @@ export default function BetCard({ bet, onRemove, onStakeChange }: BetCardProps) 
           type="number"
           min={1}
           value={bet.stake}
-          onChange={(e) => onStakeChange(bet.matchId, Math.max(1, Number(e.target.value)))}
+          onChange={(e) =>
+            onStakeChange(bet.matchId, bet.pick, Math.max(1, Number(e.target.value)))
+          }
           className="w-16 rounded border border-border-medium px-2 py-1 text-xs text-text-primary outline-none focus:border-primary"
         />
       </div>
@@ -53,5 +65,5 @@ export default function BetCard({ bet, onRemove, onStakeChange }: BetCardProps) 
         Ganar: S/. {potentialWin}
       </span>
     </div>
-  )
+  );
 }
