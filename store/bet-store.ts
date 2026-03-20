@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Pick } from '@/types/domain'
+import type { Pick, BetStatus } from '@/types/domain'
 
 export interface BetItem {
   matchId: string
@@ -11,11 +11,27 @@ export interface BetItem {
   stake: number
 }
 
+export interface PlacedBet extends BetItem {
+  id: string
+  status: BetStatus
+  return: number | null
+  placedAt: string
+}
+
+function simulateStatus(): { status: BetStatus; returnMultiplier: number | null } {
+  const rand = Math.random()
+  if (rand < 0.6) return { status: 'PENDING', returnMultiplier: null }
+  if (rand < 0.8) return { status: 'WON', returnMultiplier: 1 }
+  return { status: 'LOST', returnMultiplier: 0 }
+}
+
 interface BetStore {
   bets: BetItem[]
+  placedBets: PlacedBet[]
   addBet: (bet: Omit<BetItem, 'stake'>) => void
   removeBet: (matchId: string) => void
   updateStake: (matchId: string, stake: number) => void
+  placeBets: () => void
   clearAll: () => void
 }
 
@@ -23,6 +39,7 @@ export const useBetStore = create<BetStore>()(
   persist(
     (set) => ({
       bets: [],
+      placedBets: [],
 
       addBet: (bet) =>
         set((state) => {
@@ -53,6 +70,24 @@ export const useBetStore = create<BetStore>()(
           ),
         }))
       },
+
+      placeBets: () =>
+        set((state) => {
+          const newPlaced: PlacedBet[] = state.bets.map((bet) => {
+            const { status, returnMultiplier } = simulateStatus()
+            return {
+              ...bet,
+              id: `bet_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+              status,
+              return: returnMultiplier !== null ? bet.odd * bet.stake * returnMultiplier : null,
+              placedAt: new Date().toISOString(),
+            }
+          })
+          return {
+            bets: [],
+            placedBets: [...newPlaced, ...state.placedBets],
+          }
+        }),
 
       clearAll: () => set({ bets: [] }),
     }),
