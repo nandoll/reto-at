@@ -12,7 +12,7 @@ import LoginModal from './LoginModal'
 export default function CuponSidebar() {
   const { data: session } = useSession()
   const hydrated = useStoreHydration()
-  const { bets, removeBet, updateStake, clearAll } = useBetStore()
+  const { bets, removeBet, updateStake, clearAll, placeBets } = useBetStore()
   const [toast, setToast] = useState<{ message: string; detail?: string } | null>(null)
   const [showLogin, setShowLogin] = useState(false)
 
@@ -30,8 +30,8 @@ export default function CuponSidebar() {
       message: '¡Apuesta registrada!',
       detail: `${activeBets.length} apuesta${activeBets.length > 1 ? 's' : ''} · S/. ${totalStake.toFixed(2)}`,
     })
-    clearAll()
-  }, [session, activeBets.length, totalStake, clearAll])
+    placeBets()
+  }, [session, activeBets.length, totalStake, placeBets])
 
   return (
     <>
