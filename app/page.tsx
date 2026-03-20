@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import type { MatchesResponse } from '@/types/domain'
 import MatchTimeline from './components/MatchTimeline'
+import CuponSidebar from './components/CuponSidebar'
 
 async function getMatches(): Promise<MatchesResponse> {
   const res = await fetch(`${process.env.AUTH_URL ?? 'http://localhost:3806'}/api/matches`, {
@@ -22,6 +23,7 @@ export default function Home() {
           <MatchTimelineLoader />
         </Suspense>
       </div>
+      <CuponSidebar />
     </div>
   )
 }
