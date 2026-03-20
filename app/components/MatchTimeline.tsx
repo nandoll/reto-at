@@ -81,7 +81,9 @@ export default function MatchTimeline({ matches }: MatchTimelineProps) {
 
     addBet({
       matchId,
+      homeTeamId: match.homeTeam.id,
       homeTeam: match.homeTeam.name,
+      awayTeamId: match.awayTeam.id,
       awayTeam: match.awayTeam.name,
       pick,
       odd,
@@ -97,10 +99,11 @@ export default function MatchTimeline({ matches }: MatchTimelineProps) {
       </div>
 
       <div className="flex gap-3 overflow-x-auto px-6 py-3">
-        {featured.map((match) => (
+        {featured.map((match, i) => (
           <FeaturedCard
             key={match.id}
             match={match}
+            labelIndex={i}
             selectedPick={hydrated ? (selectedPicks[match.id] ?? []) : []}
             onPickSelect={handlePickSelect}
           />

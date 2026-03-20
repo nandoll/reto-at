@@ -82,5 +82,6 @@
 
 body {
   background: linear-gradient(150deg, #F2F2F2 0%, #FAFAFA 40%, #F0F0F5 100%);
+  background-attachment: fixed;
   color: var(--color-text-primary);
 }

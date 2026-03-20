@@ -21,7 +21,9 @@ export function getEnrichedSeedBets(): PlacedBet[] {
     return {
       id: bet.id,
       matchId: bet.matchId,
+      homeTeamId: match?.homeTeam.id ?? "",
       homeTeam: match?.homeTeam.name ?? "Equipo local",
+      awayTeamId: match?.awayTeam.id ?? "",
       awayTeam: match?.awayTeam.name ?? "Equipo visitante",
       pick: bet.pick,
       odd: bet.odd,
