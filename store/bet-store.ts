@@ -45,12 +45,14 @@ export const useBetStore = create<BetStore>()(
           bets: state.bets.filter((b) => b.matchId !== matchId),
         })),
 
-      updateStake: (matchId, stake) =>
+      updateStake: (matchId, stake) => {
+        const safe = Math.min(Math.max(isNaN(stake) ? 1 : stake, 1), 99999)
         set((state) => ({
           bets: state.bets.map((b) =>
-            b.matchId === matchId ? { ...b, stake } : b
+            b.matchId === matchId ? { ...b, stake: safe } : b
           ),
-        })),
+        }))
+      },
 
       clearAll: () => set({ bets: [] }),
     }),

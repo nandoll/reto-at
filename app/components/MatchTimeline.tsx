@@ -1,20 +1,34 @@
 'use client'
 
+import { useState } from 'react'
 import type { Match, Pick } from '@/types/domain'
 import { useBetStore } from '@/store/bet-store'
+import { useStoreHydration } from '@/store/use-store-hydration'
 import FeaturedCard from './FeaturedCard'
 import LeagueSection from './LeagueSection'
+import HourFilter from './HourFilter'
 
 interface MatchTimelineProps {
   matches: Match[]
 }
 
+function getHourSlot(startTime: string): string {
+  const date = new Date(startTime)
+  return `${String(date.getHours()).padStart(2, '0')}:00`
+}
+
+function getUniqueHours(matches: Match[]): string[] {
+  const hours = new Set(matches.map((m) => getHourSlot(m.startTime)))
+  return Array.from(hours).sort()
+}
+
 function groupByLeague(matches: Match[]) {
-  const groups: Record<string, { leagueName: string; country: string; matches: Match[] }> = {}
+  const groups: Record<string, { leagueId: string; leagueName: string; country: string; matches: Match[] }> = {}
 
   for (const match of matches) {
     if (!groups[match.league.id]) {
       groups[match.league.id] = {
+        leagueId: match.league.id,
         leagueName: match.league.name,
         country: match.league.country,
         matches: [],
@@ -27,15 +41,24 @@ function groupByLeague(matches: Match[]) {
 }
 
 export default function MatchTimeline({ matches }: MatchTimelineProps) {
+  const hydrated = useStoreHydration()
   const { bets, addBet } = useBetStore()
+  const [selectedHour, setSelectedHour] = useState<string | null>(null)
 
   const selectedPicks: Record<string, Pick> = {}
-  for (const bet of bets) {
-    selectedPicks[bet.matchId] = bet.pick
+  if (hydrated) {
+    for (const bet of bets) {
+      selectedPicks[bet.matchId] = bet.pick
+    }
   }
 
+  const hours = getUniqueHours(matches)
+  const filtered = selectedHour
+    ? matches.filter((m) => getHourSlot(m.startTime) === selectedHour)
+    : matches
+
   const featured = matches.slice(0, 3)
-  const leagues = groupByLeague(matches)
+  const leagues = groupByLeague(filtered)
 
   function handlePickSelect(matchId: string, pick: Pick, odd: number) {
     const match = matches.find((m) => m.id === matchId)
@@ -61,15 +84,21 @@ export default function MatchTimeline({ matches }: MatchTimelineProps) {
           <FeaturedCard
             key={match.id}
             match={match}
-            selectedPick={selectedPicks[match.id] ?? null}
+            selectedPick={hydrated ? selectedPicks[match.id] ?? null : null}
             onPickSelect={handlePickSelect}
           />
         ))}
       </div>
 
+      <HourFilter
+        hours={hours}
+        selected={selectedHour}
+        onSelect={setSelectedHour}
+      />
+
       {leagues.map((league) => (
         <LeagueSection
-          key={league.leagueName}
+          key={league.leagueId}
           leagueName={league.leagueName}
           country={league.country}
           matches={league.matches}

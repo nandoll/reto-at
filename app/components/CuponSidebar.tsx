@@ -4,18 +4,21 @@ import { useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Trash2 } from 'lucide-react'
 import { useBetStore } from '@/store/bet-store'
+import { useStoreHydration } from '@/store/use-store-hydration'
 import BetCard from './BetCard'
 import Toast from './Toast'
 import LoginModal from './LoginModal'
 
 export default function CuponSidebar() {
   const { data: session } = useSession()
+  const hydrated = useStoreHydration()
   const { bets, removeBet, updateStake, clearAll } = useBetStore()
   const [toast, setToast] = useState<{ message: string; detail?: string } | null>(null)
   const [showLogin, setShowLogin] = useState(false)
 
-  const totalStake = bets.reduce((sum, b) => sum + b.stake, 0)
-  const totalWin = bets.reduce((sum, b) => sum + b.odd * b.stake, 0)
+  const activeBets = hydrated ? bets : []
+  const totalStake = activeBets.reduce((sum, b) => sum + b.stake, 0)
+  const totalWin = activeBets.reduce((sum, b) => sum + b.odd * b.stake, 0)
 
   const handlePlaceBets = useCallback(() => {
     if (!session?.user) {
@@ -25,10 +28,10 @@ export default function CuponSidebar() {
 
     setToast({
       message: '¡Apuesta registrada!',
-      detail: `${bets.length} apuesta${bets.length > 1 ? 's' : ''} · S/. ${totalStake.toFixed(2)}`,
+      detail: `${activeBets.length} apuesta${activeBets.length > 1 ? 's' : ''} · S/. ${totalStake.toFixed(2)}`,
     })
     clearAll()
-  }, [session, bets.length, totalStake, clearAll])
+  }, [session, activeBets.length, totalStake, clearAll])
 
   return (
     <>
@@ -36,18 +39,18 @@ export default function CuponSidebar() {
         <div className="flex h-12 items-center justify-between bg-primary px-4">
           <span className="text-sm font-bold text-white">Cupón</span>
           <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold text-white">
-            {bets.length}
+            {activeBets.length}
           </span>
         </div>
 
-        {bets.length === 0 ? (
+        {activeBets.length === 0 ? (
           <div className="px-4 py-8 text-center">
             <p className="text-xs text-text-tertiary">Tu cupón está vacío</p>
           </div>
         ) : (
           <>
             <div className="max-h-[400px] overflow-y-auto">
-              {bets.map((bet) => (
+              {activeBets.map((bet) => (
                 <BetCard
                   key={bet.matchId}
                   bet={bet}
@@ -83,7 +86,7 @@ export default function CuponSidebar() {
               </button>
 
               <span className="text-center text-[11px] text-text-tertiary">
-                {bets.length} partido{bets.length > 1 ? 's' : ''}
+                {activeBets.length} partido{activeBets.length > 1 ? 's' : ''}
               </span>
             </div>
           </>

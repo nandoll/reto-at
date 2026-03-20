@@ -1,17 +1,10 @@
 import { Suspense } from 'react'
-import type { MatchesResponse } from '@/types/domain'
+import { getMatches } from '@/lib/data'
 import MatchTimeline from './components/MatchTimeline'
 import CuponSidebar from './components/CuponSidebar'
 
-async function getMatches(): Promise<MatchesResponse> {
-  const res = await fetch(`${process.env.AUTH_URL ?? 'http://localhost:3806'}/api/matches`, {
-    cache: 'no-store',
-  })
-  return res.json()
-}
-
 async function MatchTimelineLoader() {
-  const data = await getMatches()
+  const data = getMatches()
   return <MatchTimeline matches={data.matches} />
 }
 
